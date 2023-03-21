@@ -2,6 +2,7 @@
 
 [![Github Issues](https://img.shields.io/github/issues-raw/Njoguu/qlipa-API)](https://github.com/Njoguu/qlipa-API/issues) 
 [![Github pull requests](https://img.shields.io/github/issues-pr-raw/Njoguu/qlipa-API?color=yellow)](https://github.com/Njoguu/qlipa-API/pulls) <br>
+[![Build](https://github.com/Njoguu/qlipa-API/actions/workflows/build.yml/badge.svg?branch=main&event=push)](https://github.com/Njoguu/qlipa-API/actions/workflows/build.yml)
 
 The Q-Lipa API is a backend service that provides data and handles the logic for Q-Lipa. This API is built with Python(FastAPI), PostgreSQL, and Firebase.
 
