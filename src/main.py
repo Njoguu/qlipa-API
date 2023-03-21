@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import FastAPI
 from pydantic import BaseModel
 from http.client import CREATED, OK
@@ -56,10 +57,28 @@ async def delete_user_account(uid):
 
 
 # PSVs
+@app.get("/psvs", tags=['PSVs'], response_model=List[PSV])
+async def get_all_psvs():
+    return {
+        "PSVs": []
+    }, OK
+
+
 @app.get("/psv/{uid}", tags=['PSVs'])
 async def get_PSV_data(uid):
     return {
         "PSV data": {
             "uid": uid
+        }
+    }, OK
+
+
+# Transactions --> TODO: Add Protection to these endpoints
+@app.get("/transactions/{uid}", tags=['Transactions'])
+async def get_user_transactions(uid):
+    return {
+        "Transactions": {
+            "uid": uid,
+            "data": []
         }
     }, OK
