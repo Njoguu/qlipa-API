@@ -1,84 +1,62 @@
+from src import database
 from typing import List
 from fastapi import FastAPI
 from pydantic import BaseModel
 from http.client import CREATED, OK
 
 
-class User(BaseModel):
-    uid: int
-    name: str
-    email: str
-    username: str
-
-
-class PSVOWner(User):
-    PSV_owned_id: int
-
-
 class PSV(BaseModel):
-    uid: int
-    reg_no: int
-    PSVOWner: int
-    capacity: int
-    fare_set: float
+    psv_id: int
+    registration_no: str
+    driver: str
+    seats: int
+    route_id: int
+    owner_id: int
+    fare: int
+    date_created: str
 
 
 app = FastAPI()
 
 
-# PSV Owners
-@app.get("/owner/me", tags=['PSV Owner'])
-async def get_logged_in_owner(details: PSVOWner):
-    return details, OK
+# PSVs --> Only psv owners should be able to perform operations on these endpoints
+# get List of psvs
+@app.get("/psvs", tags=['PSVs'])
+def get_all_psvs():
 
-
-@app.post("/owner", tags=['PSV Owner'])
-async def create_new_owner(data: PSVOWner):
     return {
-        "messsage": "Account Created Successfully!",
-        "data": data
-    }, CREATED
-
-
-@app.patch("/owner/{uid}", tags=['PSV Owner'])
-async def update_owner_details(data: PSVOWner):
-    return {
-        "message": "Details Updated Successfully!",
-        "Data": data
+        "message": "Data Retrieved Sussessfully!",
+        "data": database.getData()
     }, OK
 
 
-@app.delete("/owner/{uid}", tags=['PSV Owner'])
-async def delete_user_account(uid):
-    return {
-        "message": "Account deleted Successfully",
-        "Data": uid
-    }, OK
+@app.post("/psv", tags=['PSVs'], response_model=PSV)
+async def add_new_psv(psv: PSV):
 
-
-# PSVs
-@app.get("/psvs", tags=['PSVs'], response_model=List[PSV])
-async def get_all_psvs():
-    return {
-        "PSVs": []
-    }, OK
-
-
-@app.get("/psv/{uid}", tags=['PSVs'])
-async def get_PSV_data(uid):
-    return {
-        "PSV data": {
-            "uid": uid
+    try:
+        database.addData()
+        return {
+            "message": "Added Successfully!",
+            "PSV": {
+                "psv_id": PSV.psv_id,
+                "reg_no": PSV.registration_no,
+            }
+        }, CREATED
+    except Exception as err:
+        return {
+            "message": f"Could not add data! {err}"
         }
+
+
+@app.put("/psv/{psv_id}", tags=['PSVs'])
+async def update_existing_psv(psv_id: int):
+    return {
+        ...
     }, OK
 
 
-# Transactions --> TODO: Add Protection to these endpoints
-@app.get("/transactions/{uid}", tags=['Transactions'])
-async def get_user_transactions(uid):
+@app.delete("/psv/{psv_id}", tags=['PSVs'])
+async def delete_existing_psv(psv_id: int):
     return {
-        "Transactions": {
-            "uid": uid,
-            "data": []
-        }
+        ...
     }, OK
