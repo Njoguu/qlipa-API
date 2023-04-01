@@ -1,19 +1,17 @@
-from src import database
 from typing import List
+from src import database
 from fastapi import FastAPI
 from pydantic import BaseModel
-from http.client import CREATED, OK
+from http.client import CREATED, OK, INTERNAL_SERVER_ERROR
 
 
 class PSV(BaseModel):
-    psv_id: int
     registration_no: str
     driver: str
     seats: int
     route_id: int
     owner_id: int
     fare: int
-    date_created: str
 
 
 app = FastAPI()
@@ -30,22 +28,28 @@ def get_all_psvs():
     }, OK
 
 
-@app.post("/psv", tags=['PSVs'], response_model=PSV)
-async def add_new_psv(psv: PSV):
+@app.post("/psv", tags=['PSVs'])
+async def add_new_psv(
+    registration_no: str,
+    driver: str,
+    seats: int,
+    route_id: int,
+    owner_id: int,
+    fare: int,
+):
 
     try:
-        database.addData()
+        database.addData(registration_no,driver,seats,route_id,owner_id,fare)
         return {
-            "message": "Added Successfully!",
-            "PSV": {
-                "psv_id": PSV.psv_id,
-                "reg_no": PSV.registration_no,
-            }
+            "status": "success",
+            "message": "User created successfully!"
         }, CREATED
+    
     except Exception as err:
         return {
+            "status": "error",
             "message": f"Could not add data! {err}"
-        }
+        }, INTERNAL_SERVER_ERROR
 
 
 @app.put("/psv/{psv_id}", tags=['PSVs'])

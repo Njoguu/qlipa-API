@@ -51,8 +51,32 @@ def getData():
         print(f"Error! {err}")
 
 # TODO: Add function to add PSV data
-def addData():
-    ...
+def addData(registration_no,driver,seats,route_id,owner_id,fare):
+    conn = getConnection()
+    cur = conn.cursor()
+
+    addDataSQL = f'''
+        INSERT INTO psv(
+            registration_no, driver, seats, route_id, owner_id, fare)
+            VALUES ('{registration_no}', 
+                    '{driver}',
+                    '{seats}',
+                    '{route_id}',
+                    '{owner_id}',
+                    '{fare}');
+    '''
+
+    try:
+        cur.execute(addDataSQL)
+        # Commit the changes to the database
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        return {"status": "error", "message": str(e)}
+    finally:
+        cur.close()
+        conn.close()
+
     
 # TODO: Add function to update PSV data
 # TODO: Add function to delete PSV data
