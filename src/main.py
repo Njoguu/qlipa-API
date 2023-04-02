@@ -28,6 +28,24 @@ def get_all_psvs():
     }, OK
 
 
+@app.get("/psv/{psv_id}", tags=['PSVs'])
+async def get_specific_PSV(psv_id: int):
+
+    try:
+        data = database.getPSV(psv_id)
+        return {
+            "status": "success",
+            "message": "Data Retrieved Sussessfully",
+            "data": data
+        }, OK
+
+    except Exception as err:
+        return {
+            "status": "error",
+            "message": f"Could not retrieve data! {err}"
+        }, INTERNAL_SERVER_ERROR
+
+
 @app.post("/psv", tags=['PSVs'])
 async def add_new_psv(
     registration_no: str,
@@ -39,12 +57,13 @@ async def add_new_psv(
 ):
 
     try:
-        database.addData(registration_no,driver,seats,route_id,owner_id,fare)
+        database.addData(registration_no, driver, seats,
+                         route_id, owner_id, fare)
         return {
             "status": "success",
-            "message": "User created successfully!"
+            "message": "PSV created successfully!"
         }, CREATED
-    
+
     except Exception as err:
         return {
             "status": "error",
@@ -52,15 +71,44 @@ async def add_new_psv(
         }, INTERNAL_SERVER_ERROR
 
 
-@app.put("/psv/{psv_id}", tags=['PSVs'])
-async def update_existing_psv(psv_id: int):
-    return {
-        ...
-    }, OK
+@app.patch("/psv/{psv_id}", tags=['PSVs'])
+async def update_existing_psv(
+    psv_id: int,
+    registration_no: str,
+    driver: str,
+    seats: int,
+    route_id: int,
+    owner_id: int,
+    fare: int,
+    ):
+
+    try:
+        database.updatePSV(psv_id, registration_no, driver, seats, route_id, owner_id, fare)
+
+        return {
+            "status": "success",
+            "message": "Data updated successfully!"
+        }, OK
+
+    except Exception as err:
+        return {
+            "status": "error",
+            "message": f"Could not update data! {err}"
+        }, INTERNAL_SERVER_ERROR
 
 
 @app.delete("/psv/{psv_id}", tags=['PSVs'])
 async def delete_existing_psv(psv_id: int):
-    return {
-        ...
-    }, OK
+    try:
+        database.deletePSV(psv_id)
+
+        return {
+            "status": "success",
+            "message": "Deletion successful!",
+        }, OK
+
+    except Exception as err:
+        return {
+            "status": "error",
+            "message": "Could not delete data! {err}"
+        }, INTERNAL_SERVER_ERROR
